@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced To-Do List</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(
+        -45deg,
+        #ff6b6b,
+        #6c5ce7,
+        #00cec9,
+        #fdcb6e
+    );
+
+    background-size:400% 400%;
+    animation:gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG{
+    0%{
+        background-position:0% 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+.container{
+    width:450px;
+    padding:30px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+
+h1{
+    text-align:center;
+    color:white;
+    margin-bottom:20px;
+}
+
+.input-group{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+.add-btn{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#6c5ce7;
+    color:white;
+    transition:0.3s;
+}
+
+.add-btn:hover{
+    transform:scale(1.05);
+}
+
+.task-count{
+    color:white;
+    text-align:center;
+    margin-top:15px;
+    font-size:18px;
+}
+
+ul{
+    margin-top:20px;
+}
+
+li{
+    list-style:none;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:rgba(255,255,255,0.2);
+    color:white;
+
+    padding:12px;
+    margin-top:10px;
+
+    border-radius:10px;
+
+    animation:fadeIn 0.4s ease;
+}
+
+.delete-btn{
+    border:none;
+    background:crimson;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.delete-btn:hover{
+    background:red;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🚀 My To-Do List</h1>
+
+    <div class="input-group">
+        <input
+            type="text"
+            id="taskInput"
+            placeholder="Enter a task..."
+        >
+
+        <button
+            class="add-btn"
+            onclick="addTask()"
+        >
+            Add
+        </button>
+    </div>
+
+    <div class="task-count">
+        Tasks: <span id="count">0</span>
+    </div>
+
+    <ul id="taskList"></ul>
+
+</div>
+
+<script>
+
+const taskInput = document.getElementById("taskInput");
+const taskList = document.getElementById("taskList");
+const count = document.getElementById("count");
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+renderTasks();
+
+function addTask(){
+
+    const taskText = taskInput.value.trim();
+
+    if(taskText === ""){
+        alert("Please enter a task");
+        return;
+    }
+
+    tasks.push(taskText);
+
+    saveTasks();
+
+    taskInput.value = "";
+
+    renderTasks();
+}
+
+function renderTasks(){
+
+    taskList.innerHTML = "";
+
+    tasks.forEach((task,index)=>{
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <span>${task}</span>
+            <button
+                class="delete-btn"
+                onclick="deleteTask(${index})"
+            >
+                Delete
+            </button>
+        `;
+
+        taskList.appendChild(li);
+    });
+
+    count.textContent = tasks.length;
+}
+
+function deleteTask(index){
+
+    tasks.splice(index,1);
+
+    saveTasks();
+
+    renderTasks();
+}
+
+function saveTasks(){
+    localStorage.setItem(
+        "tasks",
+        JSON.stringify(tasks)
+    );
+}
+
+taskInput.addEventListener("keypress",function(e){
+
+    if(e.key === "Enter"){
+        addTask();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
